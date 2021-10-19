@@ -1,11 +1,6 @@
 import express from 'express';
-import { createServer } from 'http';
-import { join, extname, posix } from 'path'
+import {  posix } from 'path'
 const watch = require('./watch-file')
-
-const homeRouteCb = require('./routes/home')
-const clientRouteCb = require('./routes/client')
-const targetRouteCb = require('./routes/target')
 
 
 // esm 机制：import 的内容都会走请求去拉取资源，我们自己起一个服务，就可以对这些请求的返回进行拦截处理，返回我们处理过后的内容
@@ -43,22 +38,19 @@ export async function dev() {
   const app = express();
 
   // 拦截这个入口请求，返回给用户处理过的 html 文件
-  app.get('/', homeRouteCb)
-
+  app.get('/', require('./routes/home'))
   // 把客户端代码塞给浏览器，给 html
-  app.get('/@vite/client', clientRouteCb)
-
+  app.get('/@vite/client', require('./routes/client'))
   // 静态文件的处理，返回给浏览器能认识的
-  app.get('/target/*', targetRouteCb)
+  app.get('/target/*', require('./routes/target'))
 
-  const server = createServer(app);
-
+  // const server = createServer(app);
 
   watch(app)
 
   // 启动服务
   const port = 3002;
-  server.listen(port, () => {
+  app.listen(port, () => {
     console.log(`App is runing at http://127.0.0.1:${port}`);
   })
 }

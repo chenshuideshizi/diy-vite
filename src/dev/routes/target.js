@@ -12,7 +12,6 @@ module.exports = (req, res) => {
 
     // 静态资源给一个 flag
     if ('import' in req.query) {
-      console.log(req.query)
       res.set('Content-Type', 'application/javascript');
       res.send(`export default "${req.path}"`);
       return;
